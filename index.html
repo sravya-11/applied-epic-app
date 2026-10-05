@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applied Epic Account Provisioning Portal</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        epicNavy: {
+                            50: '#f0f4f9',
+                            100: '#e1e9f3',
+                            500: '#1d4ed8',
+                            800: '#0f2b5c',
+                            900: '#0a1c3d',
+                        },
+                        navacordGold: {
+                            500: '#d4af37',
+                            600: '#b89428',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(12px);
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.25s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        pre code {
+            font-family: 'Courier New', Courier, monospace;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col antialiased">
+
+    <header class="bg-epicNavy-900 text-white shadow-md sticky top-0 z-40 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-epicNavy-800 flex items-center justify-center font-bold text-lg text-white shadow-lg border border-blue-400/30">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <div>
+                    <h1 class="text-base font-bold tracking-wide leading-tight flex items-center gap-2">
+                        Applied Epic
+                        <span class="text-[10px] font-semibold uppercase tracking-wider bg-blue-500/20 text-blue-300 border border-blue-400/30 px-2 py-0.5 rounded-full">v2026.1</span>
+                    </h1>
+                    <p class="text-xs text-slate-300">Navacord Enterprise Account Provisioning</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <div class="hidden md:flex items-center space-x-2 text-xs bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="text-slate-300">API Gateway Connected</span>
+                </div>
+                <button onclick="togglePayloadDrawer()" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-code text-blue-400"></i>
+                    <span>Live Payload</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8">
+        
+        <!-- Main Form Column -->
+        <div class="flex-1 space-y-6">
+            
+            <!-- Context Header Card -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <div class="flex items-center gap-2 text-xs text-slate-500 mb-1">
+                        <i class="fa-solid fa-folder-tree text-slate-400"></i>
+                        <span>User Administration</span>
+                        <span>/</span>
+                        <span class="text-epicNavy-800 font-semibold">New Account Provisioning</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-epicNavy-900">Applied Epic Account Creation</h2>
+                    <p class="text-xs text-slate-500 mt-1">Fill in the details below or load pre-populated templates to submit an automated access creation ticket.</p>
+                </div>
+
+                <!-- Quick Preset Actions -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" onclick="loadJohnDoeData()" class="px-3 py-2 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl shadow-xs transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-check text-blue-600"></i> Auto-fill John Doe
+                    </button>
+                    <button type="button" onclick="clearForm()" class="px-3 py-2 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-eraser"></i> Clear Fields
+                    </button>
+                </div>
+            </div>
+
+            <form id="accountForm" onsubmit="handleFormSubmit(event)" class="space-y-6">
+                
+                <!-- SECTION 1: Personal & Contact Details -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center font-bold text-sm">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-slate-900 text-sm">1. Personal & Contact Profile</h3>
+                                <p class="text-[11px] text-slate-500">Identity details and direct line coordinates</p>
+                            </div>
+                        </div>
+                        <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Step 1 of 4</span>
+                    </div>
+
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                        <!-- User Type -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                                User Type <span class="text-rose-500">*</span>
+                            </label>
+                            <select id="userType" onchange="updateLivePayload()" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition">
+                                <option value="Training User">Training User</option>
+                                <option value="Standard User">Standard User</option>
+                                <option value="Producer">Producer</option>
+                                <option value="Account Executive">Account Executive</option>
+                                <option value="Administrator">Administrator</option>
+                            </select>
+                        </div>
+
+                        <!-- First Name -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                                First Name <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="text" id="firstName" oninput="updateLivePayload()" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition" placeholder="First Name">
+                        </div>
+
+                        <!-- Last Name -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                                Last Name <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="text" id="lastName" oninput="updateLivePayload()" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition" placeholder="Last Name">
+                        </div>
+
+                        <!-- Professional Designations -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                                Professional Designations
+                            </label>
+                            <input type="text" id="designations" oninput="updateLivePayload()" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition" placeholder="e.g. MBA, CIP, CAIB">
+                        </div>
+
+                        <!-- Email Address -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                                Email Address <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 text-xs">
+                                    <i class="fa-regular fa-envelope"></i>
+                                </div>
+                                <input type="email" id="email" oninput="updateLivePayload()" required class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition" placeholder="user@navacord.com">
+                            </div>
+                        </div>
+
+                        <!-- Business Phone -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                                Business Phone <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 text-xs">
+                                    <i class="fa-solid fa-phone"></i>
+                                </div>
+                                <input type="tel" id="phone" oninput="updateLivePayload()" required class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition" placeholder="+1-xxx-xxx-xxxx">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 2: Agency Structure & Accounting -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-indigo-100 text-indigo-700 rounded-lg flex items-center justify-center font-bold text-sm">
+                                <i class="fa-solid fa-building"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-slate-900 text-sm">2. Organizational & Financial Mapping</h3>
+                                <p class="text-[11px] text-slate-500">Agency hierarchy, department, and accounting codes</p>
+                            </div>
+                        </div>
+                        <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Step 2 of 4</span>
+                    </div>
+
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                        <!-- Agency Code -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                                Agency Code <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="text" id="agencyCode" oninput="updateLivePayload()" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition" placeholder="AGY-1001">
+                        </div>
+
+                        <!-- Branch -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                                Branch Location <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="text" id="branch" oninput="updateLivePayload()" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition" placeholder="Toronto Branch">
+                        </div>
+
+                        <!-- Department -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                                Department <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="text" id="department" oninput="updateLivePayload()" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition" placeholder="Commercial Lines">
+                        </div>
+
+                        <!-- Profit Centre -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                                Profit Centre <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="text" id="profitCentre" oninput="updateLivePayload()" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition" placeholder="PC-500">
+                        </div>
+
+                        <!-- Servicing Role / Commissionable Toggle -->
+                        <div class="lg:col-span-2 bg-slate-50 border border-slate-200 p-3.5 rounded-xl flex items-center justify-between">
+                            <div>
+                                <label class="text-xs font-semibold text-slate-800 block">Servicing Role / Commissionable Status</label>
+                                <span class="text-[11px] text-slate-500">Enable if user directly handles policy commission splitting and client servicing</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer ml-4">
+                                <input type="checkbox" id="servicingRole" onchange="updateLivePayload()" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 3 & 4: Security & Management -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- Security Template Copy -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col justify-between">
+                        <div>
+                            <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-emerald-100 text-emerald-700 rounded-lg flex items-center justify-center font-bold text-sm">
+                                        <i class="fa-solid fa-key"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-slate-900 text-sm">3. Security Profile Copy</h3>
+                                        <p class="text-[11px] text-slate-500">Mirror access from existing employee</p>
+                                    </div>
+                                </div>
+                                <span class="text-[11px] font-semibold text-slate-400">Step 3</span>
+                            </div>
+
+                            <div class="p-6 space-y-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                                        Template User to Copy <span class="text-rose-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 text-xs">
+                                            <i class="fa-solid fa-user-gear"></i>
+                                        </div>
+                                        <input type="text" id="templateUser" oninput="updateLivePayload()" required class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition" placeholder="Jane.Smith">
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 mt-1.5"><i class="fa-solid fa-circle-info mr-1 text-blue-500"></i>Copies all security groups and structure assignments.</p>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                                        Sales Team Group
+                                    </label>
+                                    <input type="text" id="salesTeam" oninput="updateLivePayload()" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition" placeholder="Ontario Sales Team">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Management & Employment -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col justify-between">
+                        <div>
+                            <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-amber-100 text-amber-700 rounded-lg flex items-center justify-center font-bold text-sm">
+                                        <i class="fa-solid fa-briefcase"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-slate-900 text-sm">4. HR & Employment</h3>
+                                        <p class="text-[11px] text-slate-500">Reporting manager & employment tier</p>
+                                    </div>
+                                </div>
+                                <span class="text-[11px] font-semibold text-slate-400">Step 4</span>
+                            </div>
+
+                            <div class="p-6 space-y-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                                        Reporting Manager <span class="text-rose-500">*</span>
+                                    </label>
+                                    <input type="text" id="managerName" oninput="updateLivePayload()" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition" placeholder="Michael Smith">
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                                        Employment Status <span class="text-rose-500">*</span>
+                                    </label>
+                                    <select id="employmentStatus" onchange="updateLivePayload()" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition">
+                                        <option value="Full-Time">Full-Time</option>
+                                        <option value="Part-Time">Part-Time</option>
+                                        <option value="Contractor">Contractor</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-2 text-xs text-slate-500">
+                        <i class="fa-solid fa-shield-check text-emerald-600 text-sm"></i>
+                        <span>Validation check active. Required fields are flagged.</span>
+                    </div>
+
+                    <div class="flex items-center space-x-3 w-full sm:w-auto justify-end">
+                        <button type="button" onclick="exportJSONFile()" class="px-4 py-2.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-file-export text-slate-500"></i> Export Payload
+                        </button>
+                        <button type="submit" class="px-6 py-2.5 text-xs font-semibold text-white bg-epicNavy-800 hover:bg-epicNavy-900 rounded-xl shadow-md hover:shadow-lg transition flex items-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i> Submit Creation Request
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <div id="payloadSidebar" class="w-full lg:w-96 bg-slate-900 text-slate-100 rounded-2xl p-5 border border-slate-800 flex flex-col justify-between shadow-xl h-fit sticky top-24">
+            <div>
+                <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-code text-blue-400"></i>
+                        <h3 class="text-sm font-bold tracking-wide">Live Payload Inspector</h3>
+                    </div>
+                    <div class="flex bg-slate-800 p-0.5 rounded-lg text-[10px] font-semibold border border-slate-700">
+                        <button type="button" id="btnJsonTab" onclick="setPayloadFormat('json')" class="px-2.5 py-1 rounded-md bg-blue-600 text-white transition">JSON</button>
+                        <button type="button" id="btnXmlTab" onclick="setPayloadFormat('xml')" class="px-2.5 py-1 rounded-md text-slate-400 hover:text-white transition">XML</button>
+                    </div>
+                </div>
+
+                <div class="relative group">
+                    <pre id="payloadPreview" class="text-[11px] font-mono text-emerald-400 bg-slate-950 p-4 rounded-xl border border-slate-800 overflow-x-auto max-h-[420px] leading-relaxed"></pre>
+                </div>
+            </div>
+
+            <div class="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between">
+                <span class="text-[10px] text-slate-500">Real-time sync active</span>
+                <button onclick="copyPayloadToClipboard()" class="px-3 py-1.5 text-xs font-semibold bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 rounded-lg transition flex items-center gap-1.5">
+                    <i class="fa-regular fa-copy"></i> Copy Code
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="successModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full shadow-2xl overflow-hidden border border-slate-200 animate-fade-in">
+            <div class="bg-gradient-to-r from-epicNavy-900 to-epicNavy-800 p-6 text-white flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl border border-emerald-500/30">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold">Applied Epic Request Dispatched</h3>
+                        <p class="text-xs text-slate-300">Ticket Ref: <span id="modalTicketId" class="font-mono text-blue-300">EPIC-2026-9921</span></p>
+                    </div>
+                </div>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+                <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-900 flex items-center justify-between">
+                    <span><i class="fa-solid fa-bolt mr-1.5 text-emerald-600"></i> Auto-routing to IT Servicing Desk</span>
+                    <span class="font-mono text-[10px] bg-emerald-200/60 px-2 py-0.5 rounded font-semibold">Priority 1</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 text-xs bg-slate-50 p-4 rounded-xl border border-slate-200" id="modalSummaryContent">
+                    <!-- Dynamic details inserted here -->
+                </div>
+            </div>
+
+            <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 flex justify-end space-x-3">
+                <button onclick="closeModal()" class="px-5 py-2 text-xs font-semibold text-white bg-epicNavy-800 rounded-xl hover:bg-epicNavy-900 transition shadow">
+                    Acknowledge & Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-6 right-6 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 transform translate-y-24 opacity-0 transition-all duration-300 z-50 pointer-events-none border border-slate-800">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+        <span id="toastMessage" class="text-xs font-medium">Notification message</span>
+    </div>
+
+    <script>
+        let payloadFormat = 'json';
+
+        // Core dataset for John Doe
+        const johnDoeProfile = {
+            userType: "Training User",
+            firstName: "John",
+            lastName: "Doe",
+            designations: "MBA",
+            email: "john.doe@navacord.com",
+            phone: "+1-555-0198",
+            agencyCode: "AGY-1001",
+            branch: "Toronto Branch",
+            department: "Commercial Lines",
+            profitCentre: "PC-500",
+            servicingRole: true,
+            templateUser: "Jane.Smith",
+            salesTeam: "Ontario Sales Team",
+            managerName: "Michael Smith",
+            employmentStatus: "Full-Time"
+        };
+
+        // Populate John Doe Defaults
+        function loadJohnDoeData() {
+            document.getElementById('userType').value = johnDoeProfile.userType;
+            document.getElementById('firstName').value = johnDoeProfile.firstName;
+            document.getElementById('lastName').value = johnDoeProfile.lastName;
+            document.getElementById('designations').value = johnDoeProfile.designations;
+            document.getElementById('email').value = johnDoeProfile.email;
+            document.getElementById('phone').value = johnDoeProfile.phone;
+            document.getElementById('agencyCode').value = johnDoeProfile.agencyCode;
+            document.getElementById('branch').value = johnDoeProfile.branch;
+            document.getElementById('department').value = johnDoeProfile.department;
+            document.getElementById('profitCentre').value = johnDoeProfile.profitCentre;
+            document.getElementById('servicingRole').checked = johnDoeProfile.servicingRole;
+            document.getElementById('templateUser').value = johnDoeProfile.templateUser;
+            document.getElementById('salesTeam').value = johnDoeProfile.salesTeam;
+            document.getElementById('managerName').value = johnDoeProfile.managerName;
+            document.getElementById('employmentStatus').value = johnDoeProfile.employmentStatus;
+
+            updateLivePayload();
+            showToast("John Doe profile loaded!", "fa-user-check", "text-blue-400");
+        }
+
+        // Clear Form Fields
+        function clearForm() {
+            document.getElementById('accountForm').reset();
+            updateLivePayload();
+            showToast("Form cleared", "fa-eraser", "text-amber-400");
+        }
+
+        // Collect current state into object
+        function getFormState() {
+            return {
+                userType: document.getElementById('userType').value,
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                professionalDesignations: document.getElementById('designations').value,
+                emailAddress: document.getElementById('email').value,
+                businessPhone: document.getElementById('phone').value,
+                agencyCode: document.getElementById('agencyCode').value,
+                branch: document.getElementById('branch').value,
+                department: document.getElementById('department').value,
+                profitCentre: document.getElementById('profitCentre').value,
+                servicingRoleCommissionable: document.getElementById('servicingRole').checked ? "Yes" : "No",
+                templateUserToCopy: document.getElementById('templateUser').value,
+                salesTeam: document.getElementById('salesTeam').value,
+                managerName: document.getElementById('managerName').value,
+                employmentStatus: document.getElementById('employmentStatus').value,
+                timestamp: new Date().toISOString()
+            };
+        }
+
+        // Switch payload format
+        function setPayloadFormat(fmt) {
+            payloadFormat = fmt;
+            const btnJson = document.getElementById('btnJsonTab');
+            const btnXml = document.getElementById('btnXmlTab');
+
+            if (fmt === 'json') {
+                btnJson.className = "px-2.5 py-1 rounded-md bg-blue-600 text-white transition";
+                btnXml.className = "px-2.5 py-1 rounded-md text-slate-400 hover:text-white transition";
+            } else {
+                btnXml.className = "px-2.5 py-1 rounded-md bg-blue-600 text-white transition";
+                btnJson.className = "px-2.5 py-1 rounded-md text-slate-400 hover:text-white transition";
+            }
+            updateLivePayload();
+        }
+
+        // Update Payload Display
+        function updateLivePayload() {
+            const data = getFormState();
+            const previewEl = document.getElementById('payloadPreview');
+
+            if (payloadFormat === 'json') {
+                previewEl.textContent = JSON.stringify(data, null, 2);
+            } else {
+                previewEl.textContent = 
+`<AppliedEpicRequest>
+  <UserType>${escapeXml(data.userType)}</UserType>
+  <PersonalDetails>
+    <FirstName>${escapeXml(data.firstName)}</FirstName>
+    <LastName>${escapeXml(data.lastName)}</LastName>
+    <Designations>${escapeXml(data.professionalDesignations)}</Designations>
+    <Email>${escapeXml(data.emailAddress)}</Email>
+    <Phone>${escapeXml(data.businessPhone)}</Phone>
+  </PersonalDetails>
+  <Organization>
+    <AgencyCode>${escapeXml(data.agencyCode)}</AgencyCode>
+    <Branch>${escapeXml(data.branch)}</Branch>
+    <Department>${escapeXml(data.department)}</Department>
+    <ProfitCentre>${escapeXml(data.profitCentre)}</ProfitCentre>
+    <ServicingRole>${escapeXml(data.servicingRoleCommissionable)}</ServicingRole>
+  </Organization>
+  <Security>
+    <TemplateUserToCopy>${escapeXml(data.templateUserToCopy)}</TemplateUserToCopy>
+    <SalesTeam>${escapeXml(data.salesTeam)}</SalesTeam>
+  </Security>
+  <Employment>
+    <Manager>${escapeXml(data.managerName)}</Manager>
+    <Status>${escapeXml(data.employmentStatus)}</Status>
+  </Employment>
+</AppliedEpicRequest>`;
+            }
+        }
+
+        function escapeXml(unsafe) {
+            return (unsafe || '').replace(/[<>&'"]/g, function (c) {
+                switch (c) {
+                    case '<': return '&lt;';
+                    case '>': return '&gt;';
+                    case '&': return '&amp;';
+                    case '\'': return '&apos;';
+                    case '"': return '&quot;';
+                }
+            });
+        }
+
+        // Copy Payload logic using legacy execCommand as specified
+        function copyPayloadToClipboard() {
+            const content = document.getElementById('payloadPreview').textContent;
+            const textarea = document.createElement('textarea');
+            textarea.value = content;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Payload copied to clipboard!", "fa-clipboard-check", "text-blue-400");
+            } catch (err) {
+                showToast("Failed to copy payload", "fa-triangle-exclamation", "text-rose-400");
+            }
+            document.body.removeChild(textarea);
+        }
+
+        // Export JSON File
+        function exportJSONFile() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(getFormState(), null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `epic_user_request_${Date.now()}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            showToast("JSON exported to file", "fa-file-arrow-down", "text-emerald-400");
+        }
+
+        // Form Submit Action
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const data = getFormState();
+            
+            const ticketNo = "EPIC-2026-" + Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('modalTicketId').innerText = ticketNo;
+
+            document.getElementById('modalSummaryContent').innerHTML = `
+                <div><span class="text-slate-400 block text-[10px]">User Name</span><strong class="text-slate-800">${data.firstName} ${data.lastName} (${data.professionalDesignations || 'N/A'})</strong></div>
+                <div><span class="text-slate-400 block text-[10px]">Account Role</span><strong class="text-slate-800">${data.userType}</strong></div>
+                <div><span class="text-slate-400 block text-[10px]">Email</span><strong class="text-slate-800">${data.emailAddress}</strong></div>
+                <div><span class="text-slate-400 block text-[10px]">Business Phone</span><strong class="text-slate-800">${data.businessPhone}</strong></div>
+                <div><span class="text-slate-400 block text-[10px]">Agency Code / Branch</span><strong class="text-slate-800">${data.agencyCode} (${data.branch})</strong></div>
+                <div><span class="text-slate-400 block text-[10px]">Dept / Profit Centre</span><strong class="text-slate-800">${data.department} / ${data.profitCentre}</strong></div>
+                <div><span class="text-slate-400 block text-[10px]">Security Template</span><strong class="text-slate-800">${data.templateUserToCopy}</strong></div>
+                <div><span class="text-slate-400 block text-[10px]">Manager</span><strong class="text-slate-800">${data.managerName}</strong></div>
+            `;
+
+            document.getElementById('successModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('successModal').classList.add('hidden');
+        }
+
+        // Toast feedback display
+        function showToast(msg, icon = "fa-circle-check", iconColor = "text-emerald-400") {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').innerText = msg;
+            document.getElementById('toastIcon').className = `fa-solid ${icon} ${iconColor} text-sm`;
+
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3000);
+        }
+
+        // Auto load John Doe defaults on startup
+        window.onload = function() {
+            loadJohnDoeData();
+        };
+    </script>
+</body>
+</html>
